@@ -1,18 +1,22 @@
 from telebot import TeleBot
 import buttons as bt
 from geopy import Photon
+import database as db
 geolocator = Photon(user_agent="geo_locator", timeout=10)
 
 # создание объекта нашего
-bot = TeleBot(token="7630204824:AAFYX9Yfh3tg9Mg357ZvlAgHZEp-ZMfu8m0")
+bot = TeleBot(token="TOKENT")
 @bot.message_handler(commands=["start"])
 def start(message):
     user_id = message.from_user.id
-
-    bot.send_message(user_id, "Добро пожаловать в бот доставки!\n\n"
-                              "Введите своё имя")
-    # перекидываем пользователя на следующий этап (функция приема имени)
-    bot.register_next_step_handler(message, get_name)
+    checker = db.check_user(user_id)
+    if checker == True:
+        bot.send_message(user_id, "Меню: ")
+    elif checker == False:
+        bot.send_message(user_id, "Добро пожаловать в бот доставки!\n\n"
+                                  "Введите своё имя")
+        # перекидываем пользователя на следующий этап (функция приема имени)
+        bot.register_next_step_handler(message, get_name)
 
 def get_name(message):
     user_id = message.from_user.id
@@ -40,6 +44,8 @@ def get_location(message, name, phone_number):
     location = message.location
     address = geolocator.reverse((location.latitude, location.longitude)).address
     print(name, phone_number, address)
-
+    db.add_user(name, phone_number, user_id)
+    bot.send_message(user_id, "Вы успешно прошли регистрацию.\n\n"
+                              "Меню: ")
 # поддержание запуска бота
 bot.infinity_polling()
