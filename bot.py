@@ -4,10 +4,11 @@ from geopy import Photon
 geolocator = Photon(user_agent="geo_locator", timeout=10)
 
 # создание объекта нашего
-bot = TeleBot(token="TOKEN")
+bot = TeleBot(token="7630204824:AAFYX9Yfh3tg9Mg357ZvlAgHZEp-ZMfu8m0")
 @bot.message_handler(commands=["start"])
 def start(message):
     user_id = message.from_user.id
+
     bot.send_message(user_id, "Добро пожаловать в бот доставки!\n\n"
                               "Введите своё имя")
     # перекидываем пользователя на следующий этап (функция приема имени)
