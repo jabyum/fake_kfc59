@@ -81,7 +81,14 @@ def get_pr_id_name():
     #[(pr1_id, pr1_name, pr1_quantity), (pr2_id, pr2_name, pr2_quantity), ...]
     actual_products = [[product[0], product[1]] for product
                        in all_product if product[2] > 0]
+    # [[pr1_id, pr1_name], [pr2_id,pr2_name]....]
     return actual_products
+def get_exact_product(pr_id):
+    connection = sqlite3.connect("data.db")
+    sql = connection.cursor()
+    product_info = sql.execute("SELECT pr_name, pr_price, pr_desc, pr_photo "
+                               "FROM products WHERE pr_id = ?;", (pr_id, )).fetchone()
+    return product_info
 # работа с корзиной
 def add_to_cart(user_id, pr_id, pr_name, pr_price, pr_quantity):
     connection = sqlite3.connect("data.db")

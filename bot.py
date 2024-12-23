@@ -5,13 +5,13 @@ import database as db
 geolocator = Photon(user_agent="geo_locator", timeout=10)
 
 # создание объекта нашего
-bot = TeleBot(token="TOKENT")
+bot = TeleBot(token="token")
 @bot.message_handler(commands=["start"])
 def start(message):
     user_id = message.from_user.id
     checker = db.check_user(user_id)
     if checker == True:
-        bot.send_message(user_id, "Меню: ")
+        bot.send_message(user_id, "Меню: ", reply_markup=bt.main_menu_bt())
     elif checker == False:
         bot.send_message(user_id, "Добро пожаловать в бот доставки!\n\n"
                                   "Введите своё имя")
@@ -46,6 +46,32 @@ def get_location(message, name, phone_number):
     print(name, phone_number, address)
     db.add_user(name, phone_number, user_id)
     bot.send_message(user_id, "Вы успешно прошли регистрацию.\n\n"
-                              "Меню: ")
+                              "Меню: ", reply_markup=bt.main_menu_bt())
+@bot.callback_query_handler(lambda call: call.data in ["back", "cart"])
+def calls(call):
+    user_id = call.chat.id
+    if call.data == "back":
+        bot.send_message(user_id, "Меню: ", reply_markup=bt.main_menu_bt())
+    elif call.data == "cart":
+        bot.send_message(user_id, "Ваша корзина: ")
+@bot.callback_query_handler(lambda call: "prod_" in call.data)
+def get_prod_info(call):
+    user_id = call.chat.id
+    product_id = int(call.data.replace("prod_", ""))
+    product_info = db.get
+
+
+
+@bot.message_handler(content_types=["text"])
+def text_handler(message):
+    print('сработа функция отлова сообщений с контентом "текст"')
+    user_id = message.from_user.id
+    if message.text == "🍴Меню":
+        all_products = db.get_pr_id_name()
+        bot.send_message(user_id, "Выберите продукт: ", reply_markup=bt.product_in(all_products))
+    elif message.text == "✍️Отзыв":
+        bot .send_message(user_id, "Напишите ваш отзыв: ")
+    elif message.text == "🛒Корзина":
+        bot.send_message(user_id, "Ваша корзина: ")
 # поддержание запуска бота
 bot.infinity_polling()
