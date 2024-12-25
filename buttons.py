@@ -54,6 +54,19 @@ def plus_or_minus_in(plus_or_minus="", current_amount=1):
     kb.row(to_cart)
     kb.row(back)
     return kb
+def cart_in(cart):
+    kb = InlineKeyboardMarkup(row_width=1)
+    clear = InlineKeyboardButton(text="Очистить корзину", callback_data="clear_cart")
+    order = InlineKeyboardButton(text="Оформить заказ", callback_data="order")
+    back = InlineKeyboardButton(text="Назад", callback_data="back_product")
+    kb.add(order, clear, back)
+    # динамичные кнопки для удаления продуктов
+    if cart:
+        products = [InlineKeyboardButton(text=f"❌ {product[1]}",
+                                        callback_data=f"delete_{product[0]}") for product in cart]
+        kb.add(*products)
+    return kb
+
 
 
 

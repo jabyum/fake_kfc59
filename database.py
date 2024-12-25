@@ -106,8 +106,25 @@ def delete_user_cart(user_id):
     connection.commit()
 #TODO дз получение информации о корзине юзера
 # формат информации (название продуктов, количество, общая цена за это количество)
-def get_user_cart(something):
-    pass
+def get_user_cart(user_id):
+    connection = sqlite3.connect("data.db")
+    sql = connection.cursor()
+    user_cart = sql.execute("SELECT pr_name, pr_count, total_price "
+                            "FROM cart WHERE user_id=?;", (user_id, )).fetchall()
+    return user_cart
+# функции для кнопок в корзине (для удаления продукта)
+def get_cart_id_name(user_id):
+    connection = sqlite3.connect("data.db")
+    sql = connection.cursor()
+    product = sql.execute("SELECT pr_id, pr_name FROM cart WHERE user_id=?;", (user_id, )).fetchall()
+    return product
+def delete_exact_product_from_cart(user_id, pr_id):
+    connection = sqlite3.connect("data.db")
+    sql = connection.cursor()
+    sql.execute("DELETE FROM cart WHERE user_id=? and pr_id=?;", (user_id, pr_id))
+    connection.commit()
+
+
 
 
 
